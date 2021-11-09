@@ -22,8 +22,10 @@ rp(url)
   })
   .then(function(data) {
     let frankData = []
+    let promiseArray = []
+
     data.forEach((el) => {
-      rp(el.reference)
+      const promiseRequest = rp(el.reference)
       .then(function(html) {
         let returnData = el
         const $ = cheerio.load(html)
@@ -52,13 +54,21 @@ rp(url)
 
         returnData.problems = problems
 
-        frankData.push(returnData)
-        fs.writeFile('frank.json', JSON.stringify(frankData), function(err) {
-          console.log(err)
-        })
         return returnData
       })
       .catch((err) => {
+        //error
+      })
+      promiseArray.push(promiseRequest)
+    })
+
+    Promise.all(promiseArray)
+    .then((stuff) => {
+      let jsonData = stuff.filter((element) => {
+        return element !== undefined
+      })
+
+      fs.writeFile('frank.json', JSON.stringify(jsonData), function(err) {
         console.log(err)
       })
     })
