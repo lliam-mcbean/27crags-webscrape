@@ -11,6 +11,7 @@ rp(url)
     $('a.sector-item').each((i, el) => {
       const sector = $(el).attr().title
       const reference = 'https://27crags.com' + $(el).attr().href
+      console.log(reference)
 
       returnData[i] = {
         sector,
@@ -25,7 +26,7 @@ rp(url)
     let promiseArray = []
 
     data.forEach((el) => {
-      const promiseRequest = rp(el.reference)
+      promiseArray.push(rp(el.reference)
       .then(function(html) {
         let returnData = el
         const $ = cheerio.load(html)
@@ -57,9 +58,9 @@ rp(url)
         return returnData
       })
       .catch((err) => {
+        // console.log(err)
         //error
-      })
-      promiseArray.push(promiseRequest)
+      }))
     })
 
     Promise.all(promiseArray)
@@ -69,10 +70,15 @@ rp(url)
       })
 
       fs.writeFile('frank.json', JSON.stringify(jsonData), function(err) {
-        console.log(err)
+        // console.log(err)
       })
+
+      return
     })
-    return data
+    .catch((err) => {
+      console.log(err)
+    })
+    return
   })
   .catch(function(err){
     console.log('herro')
